@@ -1,3 +1,3 @@
 from setuptools import setup
 
-setup(name='rllab', version='0.1.0', packages=['rllab'])
+setup(name='mbrl', version='0.1.0', packages=['mbrl'])

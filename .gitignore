@@ -6,3 +6,8 @@
 
 # Emacs backups.
 *~
+
+# Python build stuff.
+build/
+dist/
+mbrl.egg-info/

@@ -11,7 +11,7 @@ env = gym.make("Pendulum-v0");
 # ======== Tensorflow init
 input_sa,y,NN,l,lw, lb, reg = BuildNN(lsizes = [3+1,20,10,3], state_dim = 3, action_dim = 1);
 
-L = tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y,NN)),1,keep_dims=True)));
+L = tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(tf.subtract(y,NN)),1,keep_dims=True)));
 
 nu = 0.01;
 #train_step = tf.train.GradientDescentOptimizer(nu).minimize(L);

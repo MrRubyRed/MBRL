@@ -21,7 +21,7 @@ dyn = Dynamics(STATE_DIM, ACTION_DIM, [STATE_DIM + ACTION_DIM, 20, 10, STATE_DIM
 
 # Create loss functor (RMS error) and set up optimizer.
 rms = tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(
-    tf.subtract(dyn.output_, dyn.next_state_)), 1, keep_dims=True)))
+    tf.subtract(dyn.next_state_, dyn.output_)), 1, keep_dims=True)))
 learning_rate = 0.01
 momentum = 0.995
 train_step = tf.train.MomentumOptimizer(
@@ -52,7 +52,7 @@ for ii in range(NUM_ROLLOUTS):
 
 # Training.
 BATCH_SIZE = 20
-NUM_TRAIN_STEPS = 10000
+NUM_TRAIN_STEPS = 1000
 for ii in range(NUM_TRAIN_STEPS):
     indices = np.random.randint(NUM_ROLLOUTS * TIME_HORIZON, size=BATCH_SIZE)
 

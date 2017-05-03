@@ -1,16 +1,14 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import pickle
 import numpy as np
 
 H_depths = [1, 5, 10];
-colors = ["r", "g", "b"];
 datasets = [];
 ax = None;
 labels = []
 
-for H_depth, color in zip(H_depths, colors):
+for H_depth in H_depths:
     data = pickle.load(open("norm_errs_H" + str(H_depth) + ".pkl", "rb"));
     datasets.append(data);
     labels.append("horizon = " + str(H_depth));

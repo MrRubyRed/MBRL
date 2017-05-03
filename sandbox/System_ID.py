@@ -7,7 +7,7 @@ Demo of system identification on an inverted pendulum, using one step dynamics.
 
 import gym
 import tensorflow as tf
-from mbrl.dynamics import dynamics
+from mbrl.dynamics.dynamics import Dynamics
 import numpy as np
 import pickle
 
@@ -20,7 +20,8 @@ ACTION_DIM = 1
 dyn = Dynamics(STATE_DIM, ACTION_DIM, [STATE_DIM + ACTION_DIM, 20, 10, STATE_DIM])
 
 # Create loss functor (RMS error) and set up optimizer.
-rms = tf.sqrt(tf.reduce_mean(tf.square(tf.sub(dyn.output_, dyn.next_state_), 1, keep_dims=True)))
+rms = tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(
+    tf.sub(dyn.output_, dyn.next_state_)), 1, keep_dims=True)))
 learning_rate = 0.01
 momentum = 0.995
 train_step = tf.train.MomentumOptimizer(
@@ -35,16 +36,15 @@ sess.run(init)
 NUM_ROLLOUTS = 300
 TIME_HORIZON = 20
 
-states = np.zeros((NUM_ROLLOUTS * TIME_HORIZON, STATE_DIM))
-actions = np.zeros((NUM_ROLLOUTS * TIME_HORIZON, ACTION_DIM))
+sa = np.zeros((NUM_ROLLOUTS * TIME_HORIZON, STATE_DIM + ACTION_DIM))
 targets = np.zeros((NUM_ROLLOUTS * TIME_HORIZON, STATE_DIM))
 for ii in range(NUM_ROLLOUTS):
     s = env.reset()
 
     for jj in range(TIME_HORIZON):
         a = np.random.uniform(-2.0, 2.0, (1,))
-        states[ii*TIME_HORIZON + jj, :] = s
-        actions[ii * TIME_HORIZON + jj, :] = a
+        sa[ii*TIME_HORIZON + jj, :STATE_DIM] = s
+        sa[ii*TIME_HORIZON + jj, STATE_DIM:] = a
 
         step = env.step(a)
         targets[ii * TIME_HORIZON, :] = step[0]
@@ -52,16 +52,14 @@ for ii in range(NUM_ROLLOUTS):
 
 # Training.
 BATCH_SIZE = 20
-NUM_TRAIN_STEPS = 1000
+NUM_TRAIN_STEPS = 10000
 for ii in range(NUM_TRAIN_STEPS):
     indices = np.random.randint(NUM_ROLLOUTS * TIME_HORIZON, size=BATCH_SIZE)
 
-    sess.run(train_step, feed_dict={dyn.state_ : states[indices],
-                                    dyn.action_ : actions[indices],
-                                    dyn.output_ : targets[indices]})
+    sess.run(train_step, feed_dict={dyn.sa_ : sa[indices],
+                                    dyn.next_state_ : targets[indices]})
 
     if np.mod(ii, 50) == 0:
-        print("RMS error at iteration %d is %f", ii,
-                  sess.run(rms, feed_dict={dyn.state_ : states,
-                                           dyn.action_ : actions,
-                                           dyn.output_ : targets}))
+        print("RMS error at iteration %d is %f" %
+                  (ii, sess.run(rms, feed_dict={dyn.sa_ : sa,
+                                                dyn.next_state_ : targets})))

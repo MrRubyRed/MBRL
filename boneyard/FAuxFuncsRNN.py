@@ -24,7 +24,7 @@ def BuildRNN(lsizes = None, state_dim = None, action_dim = None, H_depth = 1):
 
     #First Part of the NN                                     
     curr_u = tf.slice(u_l,[0,0],[-1,action_dim]);
-    next_i = tf.concat(1,[input_s,curr_u]);                               
+    next_i = tf.concat([input_s,curr_u],1);                               
     l = [];                                     
     l.append(tf.nn.sigmoid(tf.add(tf.matmul(next_i,lw[0]), lb[0]),name="A"+str(0)))
     for i in range(len(lw)-2):
@@ -39,7 +39,7 @@ def BuildRNN(lsizes = None, state_dim = None, action_dim = None, H_depth = 1):
     for i in range(H_depth-1):
         
         curr_u = tf.slice(u_l,[0,(i+1)*action_dim],[-1,action_dim]);
-        next_i = tf.concat(1,[Big_l[-1],curr_u]); 
+        next_i = tf.concat([Big_l[-1],curr_u],1); 
         
         l.append(tf.nn.sigmoid(tf.add(tf.matmul(next_i,lw[0]), lb[0])))
         for i in range(len(lw)-2):

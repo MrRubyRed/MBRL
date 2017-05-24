@@ -9,12 +9,12 @@ import pickle
 env = gym.make("Pendulum-v0");
 
 # ======== Tensorflow init
-H_depth = 5;
+H_depth = 1;
 state_dim = 3;
 action_dim = 1;
-input_s,u_l,y,y_l,Big_l,lw,lb,reg = BuildRNN(lsizes = [3+1,10,3], state_dim = state_dim, action_dim = action_dim, H_depth = H_depth);
+input_s,u_l,y,y_l,Big_l,lw,lb,reg = BuildRNN(lsizes = [3+1,15,3], state_dim = state_dim, action_dim = action_dim, H_depth = H_depth);
 
-L_l = [tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y_l[i],Big_l[i])),1,keep_dims=True))) for i in range(H_depth)]
+L_l = [tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(tf.subtract(y_l[i],Big_l[i])),1,keep_dims=True))) for i in range(H_depth)]
 L = tf.reduce_sum(L_l);
 #L = tf.sqrt(tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y,NN)),1,keep_dims=True)));
 

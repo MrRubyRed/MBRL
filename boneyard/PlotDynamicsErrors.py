@@ -4,7 +4,7 @@ import matplotlib.patches as mpatches
 import pickle
 import numpy as np
 
-H_depths = [1, 5, 10];
+H_depths = [1, 5];
 colors = ["r", "g", "b"];
 datasets = [];
 ax = None;
